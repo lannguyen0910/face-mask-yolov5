@@ -4,6 +4,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
 
+from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, Response
 from models.experimental import attempt_load
 from utils.datasets import letterbox
@@ -13,13 +14,15 @@ from utils.plots import plot_one_box
 from utils.torch_utils import time_synchronized
 
 
-app = Flask(__name__, static_url_path='', 
+app = Flask(__name__, static_url_path='',
             static_folder='static',
             template_folder='templates')
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 def gen():
     source, weights, imgsz, frame_rate = opt.source, opt.weights, opt.img_size, opt.frame_rate
@@ -34,14 +37,15 @@ def gen():
 
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
-    colors = [[0,0,255], [0,255,0]]
+    colors = [[0, 0, 255], [0, 255, 0]]
 
     # Run inference
     if device.type != 'cpu':
-        model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
-    
+        model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(
+            next(model.parameters())))  # run once
+
     print(f"Video capturing at {cap.get(cv2.CAP_PROP_FPS)} FPS")
-    
+
     is_predicting = False
     count_frame = 1
     while(True):
@@ -51,13 +55,13 @@ def gen():
         # Pad size
         img = letterbox(img0, imgsz, 32)[0]
         # BGR to RGB, to 3x416x416
-        img = img[:, :, ::-1].transpose(2, 0, 1)  
+        img = img[:, :, ::-1].transpose(2, 0, 1)
         img = np.ascontiguousarray(img)
 
         img = torch.from_numpy(img).to(device)
-        img = img.float() # uint8 to fp16/32
+        img = img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        
+
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
 
@@ -69,18 +73,20 @@ def gen():
         # string result
         s = f'%gx%g ' % img.shape[2:]
 
-        if is_predicting:    
+        if is_predicting:
             is_predicting = False
             t1 = time_synchronized()
             pred = model(img, augment=opt.augment)[0]
             # Apply NMS
-            pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
+            pred = non_max_suppression(
+                pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
             t2 = time_synchronized()
 
             for i, det in enumerate(pred):  # detections per image
                 if len(det):
                     # Rescale boxes from img_size to im0 size
-                    det[:, :4] = scale_coords(img.shape[2:], det[:, :4], img0.shape).round()
+                    det[:, :4] = scale_coords(
+                        img.shape[2:], det[:, :4], img0.shape).round()
 
                     # Print time (inference + NMS)
                     s += f"| ({t2 - t1:.3f}s) | Fps: {round(1/(t2-t1), 1)}"
@@ -88,7 +94,8 @@ def gen():
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         label = f'{names[int(cls)]}'
-                        plot_one_box(xyxy, img0, label=label, color=colors[int(cls)], line_thickness=3)
+                        plot_one_box(xyxy, img0, label=label,
+                                     color=colors[int(cls)], line_thickness=3)
         # show image
         # cv2.imshow('Number plate detection', img0)
 
@@ -113,20 +120,56 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='models/weights/yolov3-tiny.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='0', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.15, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-    parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
-    parser.add_argument('--augment', action='store_true', help='augmented inference')
-    parser.add_argument('--update', action='store_true', help='update all models')
-    parser.add_argument('--project', default='runs/detect', help='save results to project/name')
-    parser.add_argument('--name', default='exp', help='save results to project/name')
-    parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--frame-rate', default=0, type=int, help='sample rate')
+    parser = argparse.ArgumentParser(
+        'Experiment face mask detection with Yolov5 models')
+
+    parser.add_argument('--ngrok', action='store_true',
+                        default=False, help="Run on local or ngrok")
+    parser.add_argument('--host',  type=str,
+                        default='192.168.100.4:4000', help="Local IP")
+    parser.add_argument('--debug', action='store_true',
+                        default=False, help="Run app in debug mode")
+
+    parser.add_argument('--weights', nargs='+', type=str,
+                        default='./models/weights/yolov5s.pt', help='model.pt path(s)')
+    parser.add_argument('--source', type=str, default='0',
+                        help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--img-size', type=int, default=640,
+                        help='inference size (pixels)')
+    parser.add_argument('--conf-thres', type=float,
+                        default=0.15, help='object confidence threshold')
+    parser.add_argument('--iou-thres', type=float,
+                        default=0.45, help='IOU threshold for NMS')
+    parser.add_argument('--device', default='',
+                        help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--classes', nargs='+', type=int,
+                        help='filter by class: --class 0, or --class 0 2 3')
+    parser.add_argument('--agnostic-nms', action='store_true',
+                        help='class-agnostic NMS')
+    parser.add_argument('--augment', action='store_true',
+                        help='augmented inference')
+    parser.add_argument('--update', action='store_true',
+                        help='update all models')
+    parser.add_argument('--project', default='runs/detect',
+                        help='save results to project/name')
+    parser.add_argument('--name', default='exp',
+                        help='save results to project/name')
+    parser.add_argument('--exist-ok', action='store_true',
+                        help='existing project/name ok, do not increment')
+    parser.add_argument('--frame-rate', default=0,
+                        type=int, help='sample rate')
     opt = parser.parse_args()
-    app.run(debug=True)
+
+    if opt.ngrok:
+        run_with_ngrok(app)
+        app.run()
+    else:
+        hostname = str.split(opt.host, ':')
+        if len(hostname) == 1:
+            port = 4000
+        else:
+            port = hostname[1]
+        host = hostname[0]
+
+        app.run(host=host, port=port, debug=opt.debug, use_reloader=False,
+                ssl_context='adhoc')
