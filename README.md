@@ -22,7 +22,7 @@ python download_weights.py
 ```
 - Start the app. Options: [yolov5s.pt | yolov5m.pt | yolov5l.pt | yolov5x.pt]
 ```
-python app.py --host=localhost:3000 --weights './model/weights/yolov5s.pt'
+python app.py --host localhost:3000 --weights './models/weights/yolov5s.pt'
 ```
 
 🚨 There is a high chance that you'll face some errors when run the app on local machine. Feel free to make a pull request!  
