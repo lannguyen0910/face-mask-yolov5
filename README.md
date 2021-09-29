@@ -1,5 +1,7 @@
-# 😷 **Face mask detection** 😷
-Experiment face mask detection with YOLOv5 models <a href="https://wandb.ai/lannguyen/face-mask-yolov5"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="WandB"></a>
+<h1 align="center"> 😷 Face mask detection 😷 </h1>
+<h3 align="center"><b>Experiment face mask detection with YOLOv5 models on WandB<b>  <a href="https://wandb.ai/lannguyen/face-mask-yolov5"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="WandB"></a></h3>
+
+<br>
 
 ## 🌟 **Run on Google Colab (Recommend)**
 - Open notebook and follow the instructions [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1KTAk_kdO74OvXMGxdGdOLx6QPu3Yr0rb?usp=sharing)
@@ -41,16 +43,16 @@ python app.py --host=localhost:3000 --weights './model/weights/yolov5s.pt'
 ### **Metrics**
 <p align="center">
     <img src="./assets/experiments/metrics_all.PNG" style="width:50%" />
-    <img src="./assets/experiments/mAP_0.5.PNG" style="width:50%" />
-    <img src="./assets/experiments/mAP_0.5_0.95.PNG" style="width:50%" />
+    <img src="./assets/experiments/mAP_0.5.PNG" style="width:100%" />
+    <img src="./assets/experiments/mAP_0.5_0.95.PNG" style="width:100%" />
 </p>
 
 ### **Lossses**
 
 <p align="center">
-    <img src="./assets/experiments/train_loss.PNG" style="width:50%" />
-    <img src="./assets/experiments/val_loss.PNG" style="width:50%" />
+    <img src="./assets/experiments/train_loss.PNG" style="width:100%" />
+    <img src="./assets/experiments/val_loss.PNG" style="width:100%" />
 </p>
 
 # 📙 **References**
-- https://github.com/waittim/mask-detector
+- Inspire from: https://github.com/waittim/mask-detector
