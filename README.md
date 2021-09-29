@@ -3,10 +3,10 @@
 
 <br>
 
-## 🌟 **Run on Google Colab (Recommend)**
-- Open notebook and follow the instructions [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1KTAk_kdO74OvXMGxdGdOLx6QPu3Yr0rb?usp=sharing)
+## 🌟 **Inference on Google Colab (Recommend)**
+- **Open notebook and follow the instructions** [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1KTAk_kdO74OvXMGxdGdOLx6QPu3Yr0rb?usp=sharing)
 
-## 🌟 **Run on local machine (Require CUDA)**
+## 🌟 **Inference on local machine (Require CUDA)**
 - Clone the repo
 ```
 git clone https://github.com/lannguyen0910/face-mask-yolov5/
@@ -28,7 +28,7 @@ python app.py --host=localhost:3000 --weights './model/weights/yolov5s.pt'
 🚨 There is a high chance that you'll face some errors when run the app on local machine. Feel free to make a pull request!  
 
 ## 🌟 **Train YOLOv5 models** 
-- Open notebook and follow the instructions [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ZUZHRlUe6wgXHjdjbHf7-npJAhSPJUwn?usp=sharing)
+- **Open notebook and follow the instructions** [![Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ZUZHRlUe6wgXHjdjbHf7-npJAhSPJUwn?usp=sharing)
 
 ## 🌟 **Results**
 <p align="center">
@@ -38,8 +38,11 @@ python app.py --host=localhost:3000 --weights './model/weights/yolov5s.pt'
 
 ## 🌟 **Experiments**
 **Full experiment details on** <a href="https://wandb.ai/lannguyen/face-mask-yolov5"><img src="https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg" alt="WandB"></a>
+    
 <br>
 
+**I personally train [yolov5s, yolov5m] models for 50 epochs, [yolov5l] model for 30 epochs [yolov5x] model for 10 epochs due to high computational expenses.**
+    
 ### **Metrics**
 <p align="center">
     <img src="./assets/experiments/metrics_all.PNG" style="width:50%" />
