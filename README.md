@@ -18,7 +18,7 @@ pip install -r requirements.txt
 ```
 - Download yolov5 weights (About 1.3Gb)
 ```
-- python download_weights.py
+python download_weights.py
 ```
 - Start the app. Options: [yolov5s.pt | yolov5m.pt | yolov5l.pt | yolov5x.pt]
 ```
