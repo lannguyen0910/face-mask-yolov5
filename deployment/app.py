@@ -4,12 +4,10 @@ import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
 
-from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, Response
 from models.experimental import attempt_load
 from utils.datasets import letterbox
-from utils.general import check_img_size,  non_max_suppression, \
-    scale_coords, set_logging
+from utils.general import check_img_size,  non_max_suppression, scale_coords, set_logging
 from utils.plots import plot_one_box
 from utils.torch_utils import time_synchronized
 
@@ -108,7 +106,7 @@ def gen():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        # Release capture
+    # Release capture
     cap.release()
     cv2.destroyAllWindows()
 
@@ -123,8 +121,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         'Experiment face mask detection with Yolov5 models')
 
-    parser.add_argument('--ngrok', action='store_true',
-                        default=False, help="Run on local or ngrok")
     parser.add_argument('--host',  type=str,
                         default='192.168.100.4:4000', help="Local IP")
     parser.add_argument('--debug', action='store_true',
@@ -160,16 +156,13 @@ if __name__ == '__main__':
                         type=int, help='sample rate')
     opt = parser.parse_args()
 
-    if opt.ngrok:
-        run_with_ngrok(app)
-        app.run()
+    hostname = str.split(opt.host, ':')
+    if len(hostname) == 1:
+        port = 4000
     else:
-        hostname = str.split(opt.host, ':')
-        if len(hostname) == 1:
-            port = 4000
-        else:
-            port = hostname[1]
-        host = hostname[0]
+        port = hostname[1]
+    host = hostname[0]
 
-        app.run(host=host, port=port, debug=opt.debug, use_reloader=False,
-                ssl_context='adhoc')
+    app.run(host=host, port=port, debug=opt.debug, use_reloader=False)
+
+# python app.py --host localhost:3000 --debug
