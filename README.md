@@ -50,7 +50,7 @@ python app.py --host localhost:3000 --weights './models/weights/yolov5s.pt'
     <img src="./assets/experiments/mAP_0.5_0.95.PNG" style="width:100%" />
 </p>
 
-### **Lossses**
+### **Losses**
 
 <p align="center">
     <img src="./assets/experiments/train_loss.PNG" style="width:100%" />
